@@ -11,63 +11,75 @@ package body TaskThink is
    myClock : Time;
    StartTime : Time;
    EndTime : Time;
+
    ElapsedTime: Time_Span;
-   Distance1 : Integer:= 20;
+   Distance1 : Integer:= 30;
    Distance2 : Integer := 10;
 
+
+   LeftDistanceClose : Boolean := false;
+   RightDistanceClose : Boolean := false;
+   BackDistanceClose : Boolean := false;
+   LeftDistanceVeryClose : Boolean := false;
+   RightDistanceVeryClose : Boolean := false;
+   BackDistanceVeryClose : Boolean := false;
+
+
+
    begin
+
+   MotorDriver.SetDirection(Forward);
       loop
          
          myClock := Clock;
+         StartTime := Clock;
          Sensor1 := Brain.GetMeasurementSensor1;
          Sensor2 := Brain.GetMeasurementSensor2;
          Sensor3 := Brain.GetMeasurementSensor3;
-         --StartTime := Clock;
-         MotorDriver.SetDirection(Forward);
+
+         LeftDistanceClose := (Sensor1 < Distance1 and Sensor1 /= 0);
+         RightDistanceClose := (Sensor2 < Distance1 and Sensor2 /= 0);
+         BackDistanceClose := (Sensor3 < Distance1 and Sensor3 /= 0);
+         LeftDistanceVeryClose := (Sensor1 < Distance2 and Sensor1 /= 0);
+         RightDistanceVeryClose := (Sensor2 < Distance2 and Sensor2 /= 0);
+         BackDistanceVeryClose := (Sensor3 < Distance2 and Sensor3 /= 0);
+
+
+
          case MotorDriver.GetDirection is
             when Forward =>
-               if((Sensor1 /= 0 and Sensor2 /= 0) and (Sensor1 < Distance2 or Sensor2 < Distance2)) then
-                  MotorDriver.SetDirection(Backward);
-               elsif(Sensor2 /= 0 and Sensor2 < Distance1) then
-                  MotorDriver.SetDirection(Left);
-               elsif(Sensor1 /= 0 and Sensor1 < Distance1) then
-                  MotorDriver.SetDirection(Right);
+               if(LeftDistanceClose or RightDistanceClose) then
+                  MotorDriver.SetDirection(stop);
+
                end if;
             when Stop =>
-               Put_Line ("Current Direction is: Stop");
-            when Left =>
-               if((Sensor1 /= 0 and Sensor2 /= 0) and (Sensor1 < Distance2 or Sensor2 < Distance2)) then
-                  MotorDriver.SetDirection(Backward);
-               elsif((Sensor1 = 0 and Sensor2 = 0) or (Sensor1 > Distance1 and Sensor2 > Distance1)) then
-               MotorDriver.SetDirection(Forward);
-               end if;
-            when Right =>
-               if((Sensor1 /= 0 and Sensor2 /= 0) and (Sensor1 < Distance2 or Sensor2 < Distance2)) then
-                  MotorDriver.SetDirection(Backward);
-               elsif((Sensor1 = 0 and Sensor2 = 0) or (Sensor1 > Distance1 and Sensor2 > Distance1)) then
-               MotorDriver.SetDirection(Forward);
-               end if;
-            when Backward =>
-               if(Sensor3 /= 0 and Sensor3 < Distance2) then
+               if(not LeftDistanceClose and not RightDistanceClose) then
                   MotorDriver.SetDirection(Forward);
-               elsif((Sensor1 = 0 and Sensor2 = 0) or (Sensor1 > Distance1 and Sensor2 > Distance1)) then
-               MotorDriver.SetDirection(Forward);
+               elsif((LeftDistanceVeryClose or RightDistanceVeryClose) and not BackDistanceClose) then
+                  MotorDriver.SetDirection(Backward);
+               elsif(RightDistanceClose) then
+                  MotorDriver.SetDirection(Left);
+               elsif(LeftDistanceClose) then
+                  MotorDriver.SetDirection(Right);
+               end if;
+            when Left | Right =>
+               if(LeftDistanceVeryClose or RightDistanceVeryClose or BackDistanceVeryClose) then
+                  MotorDriver.SetDirection(stop);
+               elsif((Sensor1 > Distance1 or Sensor1 = 0) or (Sensor2 > Distance1 or Sensor2 = 0) or (Sensor3 > Distance1 or Sensor3 = 0)) then
+                  MotorDriver.SetDirection(Stop);
+               end if;
+
+            when Backward =>
+               if((not LeftDistanceClose and not RightDistanceClose) or (BackDistanceVeryClose)) then
+                  MotorDriver.SetDirection(stop);
+
                end if;
             
          end case;
 
-         --if((Sensor1 = 0 and Sensor2 = 0) or (Sensor1 > 20 and Sensor2 > 20)) then
-            --MotorDriver.SetDirection(Forward);
-         --elsif(Sensor1 < Sensor2) then
-            --MotorDriver.SetDirection(Right);
-         --elsif(Sensor1 > Sensor2) then
-            --MotorDriver.SetDirection(Left);
-         --else
-            --MotorDriver.SetDirection(Stop);
-         --end if;
-         --EndTime := Clock;
-         --ElapsedTime := EndTime - StartTime;
-         --Put_Line ("Elapsed Time: " & Time_Span'Image (ElapsedTime));
+         EndTime := Clock;
+         ElapsedTime := EndTime - StartTime;
+         --Put_Line("Elapsed time (ms):" &Duration'Image (To_Duration (ElapsedTime) * 1_000.0));
          
          delay until myClock + Milliseconds(100);  --random period
       end loop;

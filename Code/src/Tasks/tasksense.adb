@@ -29,18 +29,18 @@ package body TaskSense is
                         -- to integrate for example an ultrasonic sensor: copy paste the ultrasonic package for the ultrasonic example to the src directory
                         -- include it using  "with ultrasonic; use ultrasonic". The ultrasonic sensor uses type Distance_CM how can we make that compatible with our Brain.SetMeasurementSensor1?  
          --put_Line("TaskSense: Sense and send to Brain");
-         --StartTime := Clock;
+         StartTime := Clock;
          Brain.SetMeasurementSensor1 (Integer(Sensor1.Read)); -- random value, hook up a sensor here note that you might need to either cast to integer OR -better- change type of Brain.SetMeasurementSensor1
          Brain.SetMeasurementSensor2 (Integer(Sensor2.Read)); -- random value, hook up another sensor here
          Brain.SetMeasurementSensor3 (Integer(Sensor3.Read)); -- random value, hook up the third sensor here
 
-         --EndTime := Clock;
-         --ElapsedTime := EndTime - StartTime;
-         --Put_Line ("Elapsed Time: " & Duration'Image (To_Duration(ElapsedTime)));
+         EndTime := Clock;
+         ElapsedTime := EndTime - StartTime;
+         --Put_Line("Elapsed time Sense(ms):" &Duration'Image (To_Duration (ElapsedTime) * 1_000.0));
          --Put_Line ("Left Distance:  " & Integer'Image (Integer(Sensor1.Read)));
          --Put_Line ("Right Distance:  " & Integer'Image (Integer(Sensor2.Read)));
             
-         delay until myClock + Milliseconds(200); --random period
+         delay until myClock + Milliseconds(100); --random period
       end loop;
    end sense;
 

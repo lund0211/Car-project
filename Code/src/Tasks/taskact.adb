@@ -10,7 +10,12 @@ with MicroBit.IOsForTasking;
 package body TaskAct is
 
    task body act is
-      myClock : Time;      
+      myClock : Time;   
+      StartTime : Time;
+      EndTime : Time;
+      ElapsedTime: Time_Span;
+      Distance1 : Integer:= 20;
+      Distance2 : Integer := 10;   
    begin
       
        -- we do Setup once at the start of the task;
@@ -20,7 +25,7 @@ package body TaskAct is
      
          --Drive(Forward);
          --MicroBit.MotorDriver.Drive(MicroBit.MotorDriver.Forward,(4095,4095,4095,4095));
-
+         StartTime := Clock;
          case MotorDriver.GetDirection is
             when Forward =>
                MicroBit.MotorDriver.Drive(MicroBit.MotorDriver.Forward,(2000,2000,2000,2000));
@@ -35,8 +40,11 @@ package body TaskAct is
          end case;
 
          --test
+
+         EndTime := Clock;
+         ElapsedTime := EndTime - StartTime;
          
-         --Put_Line ("Direction is: " & MotorDriver.GetDirection'Image);
+         Put_Line("Elapsed time Act(ms):" &Duration'Image (To_Duration (ElapsedTime) * 1_000.0));
        
          delay until myClock + Milliseconds(50);  --random period, but faster than 20 ms is no use because Set_Analog_Period_Us(20000) !
                                                   --faster is better but note the weakest link: if decisions in the thinking task come at 100ms and acting come at 20ms 
