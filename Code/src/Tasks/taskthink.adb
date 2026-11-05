@@ -9,10 +9,7 @@ package body TaskThink is
    Sensor2 : Integer;
    Sensor3 : Integer;
    myClock : Time;
-   StartTime : Time;
-   EndTime : Time;
 
-   ElapsedTime: Time_Span;
    Distance1 : Integer:= 30;
    Distance2 : Integer := 10;
 
@@ -32,7 +29,6 @@ package body TaskThink is
       loop
          
          myClock := Clock;
-         StartTime := Clock;
          Sensor1 := Brain.GetMeasurementSensor1;
          Sensor2 := Brain.GetMeasurementSensor2;
          Sensor3 := Brain.GetMeasurementSensor3;
@@ -43,8 +39,6 @@ package body TaskThink is
          LeftDistanceVeryClose := (Sensor1 < Distance2 and Sensor1 /= 0);
          RightDistanceVeryClose := (Sensor2 < Distance2 and Sensor2 /= 0);
          BackDistanceVeryClose := (Sensor3 < Distance2 and Sensor3 /= 0);
-
-
 
          case MotorDriver.GetDirection is
             when Forward =>
@@ -76,10 +70,6 @@ package body TaskThink is
                end if;
             
          end case;
-
-         EndTime := Clock;
-         ElapsedTime := EndTime - StartTime;
-         --Put_Line("Elapsed time (ms):" &Duration'Image (To_Duration (ElapsedTime) * 1_000.0));
          
          delay until myClock + Milliseconds(100);  --random period
       end loop;
