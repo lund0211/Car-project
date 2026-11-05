@@ -21,7 +21,7 @@ package body TaskSense is
          Brain.SetMeasurementSensor2 (Integer(Sensor2.Read)); 
          Brain.SetMeasurementSensor3 (Integer(Sensor3.Read)); 
             
-         delay until myClock + Milliseconds(100); --random period
+         delay until myClock + Milliseconds(100); 
       end loop;
    end sense;
 

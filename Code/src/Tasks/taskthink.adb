@@ -21,8 +21,6 @@ package body TaskThink is
    RightDistanceVeryClose : Boolean := false;
    BackDistanceVeryClose : Boolean := false;
 
-
-
    begin
 
    MotorDriver.SetDirection(Forward);
@@ -71,7 +69,7 @@ package body TaskThink is
             
          end case;
          
-         delay until myClock + Milliseconds(100);  --random period
+         delay until myClock + Milliseconds(100);
       end loop;
    end think;
 
